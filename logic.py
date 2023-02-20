@@ -25,7 +25,7 @@ def raid_cleanup(raid_type, gate_num):
         raid_type = 'brel'
     elif raid_type[0].lower() == 'k' or raid_type.lower() == 'clown':
         raid_type = 'kakul'
-    elif raid_type[0:1].lower() == 'vy':
+    elif raid_type[0:2].lower() == 'vy':
         raid_type = 'vykas'
     else:
         raid_type = '-1'

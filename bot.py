@@ -29,7 +29,7 @@ def run_discord_bot():
     @bot.slash_command(name='raid', description='Grab raid strats (ie: brel g4 or brel all)', guild_ids=guild_ids)
     async def raid(interaction,
                    raid_type: Option(str, "Enter a raid type (ie. brel, kakul, vykas, etc...)", required=True),
-                   gate: Option(str, "Enter a gate number (ie. G1, g1, gate 1, etc...)", required=True)):
+                   gate: Option(str, "Enter a gate number (ie. G1, 2, gate 3, etc...)", required=True)):
 
         raid_type,gate = logic.raid_cleanup(raid_type, gate)
         file_name = logic.query_raid(raid_type, gate)
