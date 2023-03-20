@@ -18,6 +18,26 @@ def run_discord_bot():
         print('We have logged in as {0.user}'.format(bot))
         await bot.sync_commands()
 
+    @bot.slash_command(name='help', description='DM with all the current commands and what they do.', guild_ids=guild_ids)
+    async def help(interaction):
+        embed = discord.Embed(title="Commands", description="Here's a list of available commands (ie. /help)",
+                              color=0x40fa1f)
+        embed.set_author(name="LA Helper", url="https://github.com/fongyuan")
+        embed.add_field(name="/optimal [price of book]",
+                        value="Takes the market price of an item and returns the optimal bid amount for the largest split for the user.\n"
+                              "The idea is that the next bid will not be worth it since it will reduce that bidders gold split.",
+                        inline=False)
+        embed.add_field(name="/raid [raid] [gate #]",
+                        value="Sends images of common raid strategies based on the drop down choices\n"
+                              "Para",
+                        inline=False)
+        embed.add_field(name="/hone",
+                        value="The user chooses the gear type (ie. legendary, relic, ancient, etc..), the target ilvl and whether it is an armor or weapon.\n"
+                              "The worst case, average case and best case material costs for success is returned based on the calculator from maxroll.gg ",
+                        inline=False)
+        await interaction.user.send(embed=embed)
+        await interaction.response.send_message('DM sent.', ephemeral=True)
+
     @bot.slash_command(name='optimal', description='Optimal bid', guild_ids=guild_ids)
     async def optimal(interaction,
                       current_price: Option(int, "Enter a price integer (ie. 8000)", required=True)):
