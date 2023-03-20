@@ -42,40 +42,65 @@ def run_discord_bot():
     async def hone(interaction):
         armor = Select(placeholder='Armor type',options=dropdowns.get_armor_select())
         view = View(armor)
-        armor_level = Select()
-        cost_type = Select()
+        armor_level = Select(placeholder='Target ilvl you want to reach')
+        armor_or_weapon = Select(placeholder='Weapon or armor?')
 
         async def armor_callback(inter):
             armor.disabled = True
-            #update for when +25 is available for brel gear
-            if armor.values[0] == '3':
-                armor_min = 12
+            # update for when +25 is available for brel and brel hard gear
+            if armor.values[0] == '1' or armor.values[0] == '3':
+                armor_min = 1
                 armor_max = 20
             else:
-                armor_min = 0
+                armor_min = 1
                 armor_max = 25
 
-            armor_level = Select(placeholder='Target ilvl you want to reach',
-                                 options=dropdowns.get_armor_lvl_select(armor_min, armor_max))
-            v = View(armor_level)
+            armor_level.options = dropdowns.get_armor_lvl_select(armor_min, armor_max)
+            armor_level.callback = armor_level_callback
+            view.add_item(armor_level)
             await inter.response.edit_message(view=view)
-            await interaction.send(view=v)
 
         async def armor_level_callback(inter):
             armor_level.disabled = True
+            armor_or_weapon.options = dropdowns.get_armor_or_weapon_select()
+            armor_or_weapon.callback = armor_or_weapon_callback
+            view.add_item(armor_or_weapon)
             await inter.response.edit_message(view=view)
-            #Selection menu is complete
 
-            #TODO: setup web search for honing costs in logic.py
-            costs = logic.optimized_bid(armor_level.values[0],armor.values[0])
-            await inter.response.send_message('The shard cost is: ')
+        async def armor_or_weapon_callback(inter):
+            armor_or_weapon.disabled = True
+            await inter.response.edit_message(view=view)
+            driver, worst_case, avg_case, best_case = logic.search_cost(armor_level.values[0],
+                                                                armor.values[0],
+                                                                armor_or_weapon.values[0])
+            await interaction.send(f'Worst case:\n'
+                                   f'\t\t\t\tSilver: {worst_case[0]}\n'
+                                   f'\t\t\t\tGold: {worst_case[1]}\n'
+                                   f'\t\t\t\tShards: {worst_case[2]}\n'
+                                   f'\t\t\t\tFusion Mat: {worst_case[3]}\n'
+                                   f'\t\t\t\tG/D Stones: {worst_case[4]}\n'
+                                   f'\t\t\t\tLeapstones: {worst_case[5]}\n'
+                                   f'Average Case:\n'
+                                   f'\t\t\t\tSilver: {avg_case[0]}\n'
+                                   f'\t\t\t\tGold: {avg_case[1]}\n'
+                                   f'\t\t\t\tShards: {avg_case[2]}\n'
+                                   f'\t\t\t\tFusion Mat: {avg_case[3]}\n'
+                                   f'\t\t\t\tG/D Stones: {avg_case[4]}\n'
+                                   f'\t\t\t\tLeapstones: {avg_case[5]}\n'
+                                   f'1 Tap:\n'
+                                   f'\t\t\t\tSilver: {best_case[0]}\n'
+                                   f'\t\t\t\tGold: {best_case[1]}\n'
+                                   f'\t\t\t\tShards: {best_case[2]}\n'
+                                   f'\t\t\t\tFusion Mat: {best_case[3]}\n'
+                                   f'\t\t\t\tG/D Stones: {best_case[4]}\n'
+                                   f'\t\t\t\tLeapstones: {best_case[5]}')
+            driver.quit()
 
         armor.callback = armor_callback
-        armor_level.callback = armor_level_callback
 
         view = View(armor)
 
         await interaction.send(view=view)
-        await interaction.response.send_message("Choose an armor type and the target ilvl")
+        await interaction.response.send_message("Choose an armor/weapon type and the target ilvl")
 
     bot.run(token)

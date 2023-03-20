@@ -18,3 +18,10 @@ def get_armor_lvl_select(min=1, max=20):
         selections.append(discord.SelectOption(label=label,value=str(i)))
 
     return selections
+
+def get_armor_or_weapon_select():
+    selections = [
+            discord.SelectOption(label='Armor',value='armor'),
+            discord.SelectOption(label='Weapon',value='weapon')]
+
+    return selections
