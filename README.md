@@ -2,6 +2,10 @@
 A discord bot with helper commands for Lost Ark players
 
 Current commands:  
+/help  
+DMs the user descriptions of all available commands. Similiar to what is described here.
+
+
 /optimal  
 Takes the market price of an item and returns the optimal bid amount for the largest split for the user.  
 The idea is that the next bid will not be worth it since it will reduce that bidders gold split.
