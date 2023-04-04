@@ -42,14 +42,17 @@ def run_discord_bot():
     async def optimal(interaction,
                       current_price: Option(int, "Enter a price integer (ie. 8000)", required=True)):
 
-        for8,for4 = logic.optimized_bid(current_price)
-        await interaction.response.send_message(f'The optimal bid for an 8 person instance is {for8}\n'
-                                                f'The optimal bid for a 4 person instance is {for4}')
+        min8,max8,min4,max4 = logic.optimized_bid(current_price)
+        await interaction.response.send_message(f'Item price = {current_price}\n'
+                                                f'For an 8 person instance:\n'
+                                                f'Bid more than {min8} and less than {max8}\n\n'
+                                                f'For a 4 person instance:\n'
+                                                f'Bid more than {min4} and less than {max4}')
 
     @bot.slash_command(name='raid', description='Grab raid strats (ie: brel g4 or brel all)', guild_ids=guild_ids)
     async def raid(interaction,
                    raid_type: Option(str, "Enter a raid type (ie. brel, kakul, vykas, etc...)", required=True),
-                   gate: Option(str, "Enter a gate number (ie. G1, 2, gate 3, etc...)", required=True)):
+                   gate: Option(str, "Enter a gate number (ie. G1, 2, gate 3, all etc...)", required=True)):
 
         raid_type,gate = logic.raid_cleanup(raid_type, gate)
         file_name = logic.query_raid(raid_type, gate)

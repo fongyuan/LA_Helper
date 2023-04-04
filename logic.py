@@ -6,10 +6,12 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 
 def optimized_bid(price):
-    for8 = price / 8 * 7 / 1.1 + 50
-    for4 = price / 4 * 3 / 1.1 + 50
+    min8 = price / 8 * 7 / 1.1 + 1
+    max8 = price / 8 * 7
+    min4 = price / 4 * 3 / 1.1 + 1
+    max4 = price / 4 * 3
 
-    return int(for8),int(for4)
+    return int(min8),int(max8),int(min4),int(max4)
 
 
 def query_raid(raid_type, gate_num):
@@ -34,7 +36,10 @@ def raid_cleanup(raid_type, gate_num):
     else:
         raid_type = '-1'
 
-    gate_num = ''.join(filter(str.isdigit, gate_num))
+    #check for 'all'
+    gate_num = gate_num.lower()
+    if gate_num != 'all':
+        gate_num = ''.join(filter(str.isdigit, gate_num))
 
     return raid_type, gate_num
 
@@ -46,7 +51,7 @@ def raid_cleanup(raid_type, gate_num):
 # 3 Multiple Items
 # 4 Worst case scenario
 # 5 No additional materials
-# ui legend after changing to singlle item:
+# ui legend after changing to single item:
 # 0 Steam - English
 # 1 T3 Brelshaza (1390)
 # 2 Europe Central
@@ -72,6 +77,7 @@ def search_cost(target_ilvl, armor_type, armor_or_weapon):
     actions.perform()
 
     # perform drop down selections based on input
+    # changes whether weapon or armor cost is searched
     ui = driver.find_elements(By.CSS_SELECTOR, 'div.ui-Select')
     if armor_or_weapon == 'armor':
         ui[4].click()
@@ -80,14 +86,37 @@ def search_cost(target_ilvl, armor_type, armor_or_weapon):
         actions.perform()
 
     # TODO add ancient gear navigation when it comes out
+    # TODO consider separate function for each armor type
+    # changes which type of armor to search for
+    # print('here')
+    # if armor_type == '1':
+    #     ui[1].click()
+    #     actions.send_keys(Keys.ARROW_UP)
+    #     actions.send_keys(Keys.ARROW_UP)
+    #     actions.send_keys(Keys.ENTER)
+    #     actions.perform()
+    # elif armor_type == '2':
+    #     print('op2')
+    #     ui[1].click()
+    #     actions.send_keys(Keys.ARROW_UP)
+    #     actions.send_keys(Keys.ENTER)
+    #     actions.perform()
+    # TODO update for when ancient gear comes out
+    # elif armor_type == '3':
+    #     ui[1].click()
+    #     actions.send_keys(Keys.ARROW_UP)
+    #     actions.send_keys(Keys.ENTER)
+    #     actions.perform()
 
     target = driver.find_elements(By.CSS_SELECTOR, 'input')
     # for index,i in enumerate(target):
     #     print(index,i.get_attribute(name='value'))
     # target[26] is the target ilvl
-    # target[27] is failed attemps
+    # target[27] is failed attempts
     # target[28] is artisan energy
     target[26].send_keys(target_ilvl)
+    # target[36].send_keys(target_ilvl)
+    # driver.save_screenshot('here.png')
 
     # get worst case
     costs = driver.find_elements(By.CSS_SELECTOR, 'span.lap-value')
